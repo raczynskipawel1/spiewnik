@@ -59,6 +59,13 @@ export default function Home() {
     }
   }
 
+  function logout() {
+  localStorage.removeItem('songbook-ok')
+  localStorage.removeItem('songbook-admin')
+  setOk(false)
+  setAdmin(false)
+  setPass('')
+}
   async function addSong() {
     if (!newTitle.trim()) return alert('Wpisz tytuł')
 
@@ -116,18 +123,28 @@ export default function Home() {
 
   return (
     <main className="page">
-      <div className="header">
-        <div>
-          <div className="logo">Śpiewnik Online</div>
-          <div className="sub">{filtered.length} z {songs.length} piosenek</div>
-        </div>
+     <div className="header">
+  <div>
+    <div className="logo">Śpiewnik Online</div>
+    <div className="sub">{filtered.length} z {songs.length} piosenek</div>
+  </div>
 
-        {admin && (
-          <button className="button" onClick={() => setShowAdd(!showAdd)}>
-            ➕ Dodaj piosenkę
-          </button>
-        )}
-      </div>
+  <div>
+    {admin && (
+      <button className="button" onClick={() => setShowAdd(!showAdd)}>
+        ➕ Dodaj piosenkę
+      </button>
+    )}
+
+    <button
+      className="button secondary"
+      onClick={logout}
+      style={{ marginLeft: '10px' }}
+    >
+      Wyloguj
+    </button>
+  </div>
+</div>
 
       {admin && showAdd && (
         <div className="detail addbox">
