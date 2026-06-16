@@ -58,3 +58,12 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   gap: 10px;
 }
+.tagline {
+  margin-top: 8px;
+  color: #756b61;
+  font-size: 13px;
+}
+
+.textarea.small {
+  min-height: 110px;
+}
