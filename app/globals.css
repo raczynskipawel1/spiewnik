@@ -40,3 +40,8 @@ a { color: inherit; text-decoration: none; }
 .header {
   align-items: flex-start;
 }
+.secondary {
+  background: white;
+  color: #241b12;
+  border: 1px solid #d8cdbf;
+}
