@@ -45,3 +45,6 @@ a { color: inherit; text-decoration: none; }
   color: #241b12;
   border: 1px solid #d8cdbf;
 }
+.editbox {
+  margin-top: 16px;
+}
