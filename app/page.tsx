@@ -129,7 +129,7 @@ export default function Home() {
     <div className="sub">{filtered.length} z {songs.length} piosenek</div>
   </div>
 
-  <div>
+  <div className="header-actions">
     {admin && (
       <button className="button" onClick={() => setShowAdd(!showAdd)}>
         ➕ Dodaj piosenkę
@@ -139,7 +139,6 @@ export default function Home() {
     <button
       className="button secondary"
       onClick={logout}
-      style={{ marginLeft: '10px' }}
     >
       Wyloguj
     </button>
