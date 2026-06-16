@@ -10,10 +10,18 @@ type Song = {
   lyrics: string | null
   image_filename: string | null
   region: string | null
+  tags: string[] | null
 }
 
 function norm(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
+function parseTags(value: string) {
+  return value
+    .split(',')
+    .map(t => t.trim())
+    .filter(Boolean)
 }
 
 export default function Home() {
@@ -24,9 +32,11 @@ export default function Home() {
   const [q, setQ] = useState('')
   const [region, setRegion] = useState('Wszystkie')
   const [showAdd, setShowAdd] = useState(false)
+
   const [newTitle, setNewTitle] = useState('')
   const [newLyrics, setNewLyrics] = useState('')
   const [newRegion, setNewRegion] = useState('')
+  const [newTags, setNewTags] = useState('ludowe')
 
   useEffect(() => {
     if (localStorage.getItem('songbook-ok') === '1') setOk(true)
@@ -60,12 +70,13 @@ export default function Home() {
   }
 
   function logout() {
-  localStorage.removeItem('songbook-ok')
-  localStorage.removeItem('songbook-admin')
-  setOk(false)
-  setAdmin(false)
-  setPass('')
-}
+    localStorage.removeItem('songbook-ok')
+    localStorage.removeItem('songbook-admin')
+    setOk(false)
+    setAdmin(false)
+    setPass('')
+  }
+
   async function addSong() {
     if (!newTitle.trim()) return alert('Wpisz tytuł')
 
@@ -74,7 +85,7 @@ export default function Home() {
       normalized_title: norm(newTitle.trim()),
       lyrics: newLyrics.trim(),
       region: newRegion.trim() || null,
-      tags: ['ludowe'],
+      tags: parseTags(newTags),
     })
 
     if (error) {
@@ -85,6 +96,7 @@ export default function Home() {
     setNewTitle('')
     setNewLyrics('')
     setNewRegion('')
+    setNewTags('ludowe')
     setShowAdd(false)
     loadSongs()
   }
@@ -101,7 +113,8 @@ export default function Home() {
     return songs.filter(s => {
       const matchesText =
         norm(s.title).includes(nq) ||
-        norm(s.lyrics || '').includes(nq)
+        norm(s.lyrics || '').includes(nq) ||
+        norm((s.tags || []).join(' ')).includes(nq)
 
       const matchesRegion =
         region === 'Wszystkie' || s.region === region
@@ -123,41 +136,44 @@ export default function Home() {
 
   return (
     <main className="page">
-     <div className="header">
-  <div>
-    <div className="logo">Śpiewnik Online</div>
-    <div className="sub">{filtered.length} z {songs.length} piosenek</div>
-  </div>
+      <div className="header">
+        <div>
+          <div className="logo">Śpiewnik Online</div>
+          <div className="sub">{filtered.length} z {songs.length} piosenek</div>
+        </div>
 
-  <div className="header-actions">
-    {admin && (
-      <button className="button" onClick={() => setShowAdd(!showAdd)}>
-        ➕ Dodaj piosenkę
-      </button>
-    )}
+        <div className="header-actions">
+          {admin && (
+            <button className="button" onClick={() => setShowAdd(!showAdd)}>
+              ➕ Dodaj piosenkę
+            </button>
+          )}
 
-    <button
-      className="button secondary"
-      onClick={logout}
-    >
-      Wyloguj
-    </button>
-  </div>
-</div>
+          <button className="button secondary" onClick={logout}>
+            Wyloguj
+          </button>
+        </div>
+      </div>
 
       {admin && showAdd && (
         <div className="detail addbox">
           <h2>Dodaj piosenkę</h2>
+
           <input className="search" placeholder="Tytuł" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
+
           <input className="search" placeholder="Region, np. Lublin / Spisz / Kolędy" value={newRegion} onChange={e => setNewRegion(e.target.value)} />
+
+          <input className="search" placeholder="Tagi po przecinku, np. ludowe, koleda" value={newTags} onChange={e => setNewTags(e.target.value)} />
+
           <textarea className="textarea" placeholder="Tekst piosenki" value={newLyrics} onChange={e => setNewLyrics(e.target.value)} />
-          <button className="button" onClick={addSong}>Zapisz</button>
+
+          <button className="button" onClick={addSong}>Zapisz piosenkę</button>
         </div>
       )}
 
       <input
         className="search"
-        placeholder="Szukaj po tytule albo tekście..."
+        placeholder="Szukaj po tytule, tekście albo tagach..."
         value={q}
         onChange={e => setQ(e.target.value)}
       />
@@ -182,6 +198,9 @@ export default function Home() {
               {song.region ? `${song.region} · ` : ''}
               {song.image_filename ? 'Zdjęcie dodane' : song.lyrics ? 'Tekst dodany' : 'Brak tekstu'}
             </div>
+            {(song.tags || []).length > 0 && (
+              <div className="tagline">{song.tags?.join(', ')}</div>
+            )}
             <span className="button">Otwórz</span>
           </Link>
         ))}
