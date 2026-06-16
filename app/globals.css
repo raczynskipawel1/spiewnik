@@ -48,3 +48,13 @@ a { color: inherit; text-decoration: none; }
 .editbox {
   margin-top: 16px;
 }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
