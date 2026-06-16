@@ -18,29 +18,68 @@ function norm(s: string) {
 
 export default function Home() {
   const [ok, setOk] = useState(false)
+  const [admin, setAdmin] = useState(false)
   const [pass, setPass] = useState('')
   const [songs, setSongs] = useState<Song[]>([])
   const [q, setQ] = useState('')
   const [region, setRegion] = useState('Wszystkie')
+  const [showAdd, setShowAdd] = useState(false)
+  const [newTitle, setNewTitle] = useState('')
+  const [newLyrics, setNewLyrics] = useState('')
+  const [newRegion, setNewRegion] = useState('')
 
   useEffect(() => {
     if (localStorage.getItem('songbook-ok') === '1') setOk(true)
+    if (localStorage.getItem('songbook-admin') === '1') {
+      setOk(true)
+      setAdmin(true)
+    }
   }, [])
 
+  async function loadSongs() {
+    const { data } = await supabase.from('songs').select('*').order('title')
+    setSongs((data || []) as Song[])
+  }
+
   useEffect(() => {
-    if (!ok) return
-    supabase.from('songs').select('*').order('title').then(({ data }) => {
-      setSongs((data || []) as Song[])
-    })
+    if (ok) loadSongs()
   }, [ok])
 
   function login() {
-    if (pass === process.env.NEXT_PUBLIC_SONGBOOK_PASSWORD) {
+    if (pass === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      localStorage.setItem('songbook-ok', '1')
+      localStorage.setItem('songbook-admin', '1')
+      setOk(true)
+      setAdmin(true)
+    } else if (pass === process.env.NEXT_PUBLIC_SONGBOOK_PASSWORD) {
       localStorage.setItem('songbook-ok', '1')
       setOk(true)
     } else {
       alert('Złe hasło')
     }
+  }
+
+  async function addSong() {
+    if (!newTitle.trim()) return alert('Wpisz tytuł')
+
+    const { error } = await supabase.from('songs').insert({
+      title: newTitle.trim(),
+      normalized_title: norm(newTitle.trim()),
+      lyrics: newLyrics.trim(),
+      region: newRegion.trim() || null,
+      tags: ['ludowe'],
+    })
+
+    if (error) {
+      alert('Błąd zapisu: ' + error.message)
+      return
+    }
+
+    setNewTitle('')
+    setNewLyrics('')
+    setNewRegion('')
+    setShowAdd(false)
+    loadSongs()
   }
 
   const regions = useMemo(() => {
@@ -82,7 +121,23 @@ export default function Home() {
           <div className="logo">Śpiewnik Online</div>
           <div className="sub">{filtered.length} z {songs.length} piosenek</div>
         </div>
+
+        {admin && (
+          <button className="button" onClick={() => setShowAdd(!showAdd)}>
+            ➕ Dodaj piosenkę
+          </button>
+        )}
       </div>
+
+      {admin && showAdd && (
+        <div className="detail addbox">
+          <h2>Dodaj piosenkę</h2>
+          <input className="search" placeholder="Tytuł" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
+          <input className="search" placeholder="Region, np. Lublin / Spisz / Kolędy" value={newRegion} onChange={e => setNewRegion(e.target.value)} />
+          <textarea className="textarea" placeholder="Tekst piosenki" value={newLyrics} onChange={e => setNewLyrics(e.target.value)} />
+          <button className="button" onClick={addSong}>Zapisz</button>
+        </div>
+      )}
 
       <input
         className="search"
