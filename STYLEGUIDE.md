@@ -185,3 +185,36 @@ Poprawiamy wyłącznie:
 * błędy OCR,
 * literówki,
 * jednolitość zapisu.
+
+## 12. Powtórzenia
+
+Jeżeli w oryginalnym wykonaniu utworu powtarzany jest fragment zwrotki lub refrenu, zapisujemy go w całości.
+
+Nie stosujemy skrótów:
+
+- /x2
+- /x3
+- Ref. x2
+
+Wyjątek stanowią sytuacje, gdy oznaczenie powtórzenia jest częścią materiału źródłowego i jego rozwinięcie nie jest możliwe lub pogarsza czytelność.
+
+### Przykład
+
+Nie:
+
+```text
+On ma jedne spodnie,
+on ma jedne spodnie
+i to w same łaty. /x2
+```
+
+Tak:
+
+```text
+On ma jedne spodnie,
+on ma jedne spodnie
+i to w same łaty.
+On ma jedne spodnie,
+on ma jedne spodnie
+i to w same łaty.
+```
