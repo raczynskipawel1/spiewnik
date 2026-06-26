@@ -176,3 +176,12 @@ spiewnik
 Bucket Storage:
 
 song-images
+
+---
+
+# Dokumentacja projektu
+
+| Dokument | Opis |
+|----------|------|
+| `PROJEKT-SPIEWNIK.md` | Opis projektu, architektury i planów rozwoju. |
+| `STYLEGUIDE.md` | Zasady formatowania tekstów piosenek i standard edycji danych. |
