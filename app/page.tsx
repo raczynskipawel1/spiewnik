@@ -30,7 +30,10 @@ export default function Home() {
   const [pass, setPass] = useState('')
   const [songs, setSongs] = useState<Song[]>([])
   const [q, setQ] = useState('')
-  const [filter, setFilter] = useState('Wszystkie')
+
+  const [selectedTag, setSelectedTag] = useState('Wszystkie')
+  const [selectedRegion, setSelectedRegion] = useState('Wszystkie')
+
   const [showAdd, setShowAdd] = useState(false)
 
   const [newTitle, setNewTitle] = useState('')
@@ -39,7 +42,10 @@ export default function Home() {
   const [newTags, setNewTags] = useState('ludowe')
 
   useEffect(() => {
-    if (localStorage.getItem('songbook-ok') === '1') setOk(true)
+    if (localStorage.getItem('songbook-ok') === '1') {
+      setOk(true)
+    }
+
     if (localStorage.getItem('songbook-admin') === '1') {
       setOk(true)
       setAdmin(true)
@@ -47,7 +53,11 @@ export default function Home() {
   }, [])
 
   async function loadSongs() {
-    const { data } = await supabase.from('songs').select('*').order('title')
+    const { data } = await supabase
+      .from('songs')
+      .select('*')
+      .order('title')
+
     setSongs((data || []) as Song[])
   }
 
@@ -78,7 +88,9 @@ export default function Home() {
   }
 
   async function addSong() {
-    if (!newTitle.trim()) return alert('Wpisz tytuł')
+    if (!newTitle.trim()) {
+      return alert('Wpisz tytuł')
+    }
 
     const { error } = await supabase.from('songs').insert({
       title: newTitle.trim(),
@@ -98,91 +110,195 @@ export default function Home() {
     setNewRegion('')
     setNewTags('ludowe')
     setShowAdd(false)
+
     loadSongs()
   }
 
-  const filters = useMemo(() => {
-  const regions = songs
-    .map(s => s.region?.trim())
-    .filter((v): v is string => Boolean(v))
+  const tags = useMemo(() => {
+    const values = songs
+      .flatMap(s => s.tags || [])
+      .map(t => t.trim())
+      .filter(Boolean)
 
-  const tags = songs
-    .flatMap(s => s.tags || [])
-    .map(t => t.trim())
-    .filter(Boolean)
+    return [
+      'Wszystkie',
+      ...Array.from(new Set(values)).sort((a, b) =>
+        a.localeCompare(b, 'pl')
+      ),
+    ]
+  }, [songs])
 
-  return [
-    'Wszystkie',
-    ...Array.from(new Set([...regions, ...tags])).sort((a, b) =>
-      a.localeCompare(b, 'pl')
-    ),
-  ]
-}, [songs])
+  const regions = useMemo(() => {
+    const values = songs
+      .map(s => s.region?.trim())
+      .filter((v): v is string => Boolean(v))
+
+    return [
+      'Wszystkie',
+      ...Array.from(new Set(values)).sort((a, b) =>
+        a.localeCompare(b, 'pl')
+      ),
+    ]
+  }, [songs])
 
   const filtered = useMemo(() => {
     const nq = norm(q)
+
     return songs.filter(s => {
       const matchesText =
         norm(s.title).includes(nq) ||
         norm(s.lyrics || '').includes(nq) ||
         norm((s.tags || []).join(' ')).includes(nq)
 
-      const matchesFilter =
-  filter === 'Wszystkie' ||
-  s.region === filter ||
-  (s.tags || []).includes(filter)
+      const matchesTag =
+        selectedTag === 'Wszystkie' ||
+        (s.tags || []).includes(selectedTag)
 
-return matchesText && matchesFilter
+      const matchesRegion =
+        selectedRegion === 'Wszystkie' ||
+        s.region === selectedRegion
+
+      return matchesText && matchesTag && matchesRegion
     })
-  }, [songs, q, region])
+  }, [songs, q, selectedTag, selectedRegion])
 
-  if (!ok) return (
-    <main className="login">
-      <div className="loginbox">
-        <h1>Śpiewnik Online</h1>
-        <p className="muted">Wpisz hasło dostępu.</p>
-        <input type="password" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={e => e.key === 'Enter' && login()} />
-        <button onClick={login}>Wejdź</button>
-      </div>
-    </main>
-  )
+  if (!ok) {
+    return (
+      <main className="login">
+        <div className="loginbox">
+          <h1>Śpiewnik Online</h1>
+
+          <p className="muted">
+            Wpisz hasło dostępu.
+          </p>
+
+          <input
+            type="password"
+            value={pass}
+            onChange={e => setPass(e.target.value)}
+            onKeyDown={e =>
+              e.key === 'Enter' && login()
+            }
+          />
+
+          <button onClick={login}>
+            Wejdź
+          </button>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="page">
+
       <div className="header">
+
         <div>
-          <div className="logo">Śpiewnik Online</div>
-          <div className="sub">{filtered.length} z {songs.length} piosenek</div>
+          <div className="logo">
+            Śpiewnik Online
+          </div>
+
+          <div className="sub">
+            {filtered.length} z {songs.length} piosenek
+          </div>
         </div>
 
         <div className="header-actions">
+
           {admin && (
-            <button className="button" onClick={() => setShowAdd(!showAdd)}>
+            <button
+              className="button"
+              onClick={() => setShowAdd(!showAdd)}
+            >
               ➕ Dodaj piosenkę
             </button>
           )}
 
-          <button className="button secondary" onClick={logout}>
+          <button
+            className="button secondary"
+            onClick={logout}
+          >
             Wyloguj
           </button>
+
         </div>
       </div>
 
       {admin && showAdd && (
         <div className="detail addbox">
+
           <h2>Dodaj piosenkę</h2>
 
-          <input className="search" placeholder="Tytuł" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
+          <input
+            className="search"
+            placeholder="Tytuł"
+            value={newTitle}
+            onChange={e => setNewTitle(e.target.value)}
+          />
 
-          <input className="search" placeholder="Region, np. Lublin / Spisz / Kolędy" value={newRegion} onChange={e => setNewRegion(e.target.value)} />
+          <input
+            className="search"
+            placeholder="Region, np. Lublin / Spisz / Kolędy"
+            value={newRegion}
+            onChange={e => setNewRegion(e.target.value)}
+          />
 
-          <input className="search" placeholder="Tagi po przecinku, np. ludowe, koleda" value={newTags} onChange={e => setNewTags(e.target.value)} />
+          <input
+            className="search"
+            placeholder="Tagi po przecinku, np. ludowe, koleda"
+            value={newTags}
+            onChange={e => setNewTags(e.target.value)}
+          />
 
-          <textarea className="textarea" placeholder="Tekst piosenki" value={newLyrics} onChange={e => setNewLyrics(e.target.value)} />
+          <textarea
+            className="textarea"
+            placeholder="Tekst piosenki"
+            value={newLyrics}
+            onChange={e => setNewLyrics(e.target.value)}
+          />
 
-          <button className="button" onClick={addSong}>Zapisz piosenkę</button>
+          <button
+            className="button"
+            onClick={addSong}
+          >
+            Zapisz piosenkę
+          </button>
+
         </div>
       )}
+
+      <div className="filter-row">
+
+        <label>
+          Typ
+          <select
+            value={selectedTag}
+            onChange={e => setSelectedTag(e.target.value)}
+          >
+            {tags.map(tag => (
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Region
+          <select
+            value={selectedRegion}
+            onChange={e => setSelectedRegion(e.target.value)}
+          >
+            {regions.map(region => (
+              <option key={region} value={region}>
+                {region}
+              </option>
+            ))}
+          </select>
+        </label>
+
+      </div>
 
       <input
         className="search"
@@ -191,33 +307,48 @@ return matchesText && matchesFilter
         onChange={e => setQ(e.target.value)}
       />
 
-      <div className="filters">
-        {filters.map(f => (
-  <button
-    key={f}
-    className={filter === f ? 'filter active' : 'filter'}
-    onClick={() => setFilter(f)}
-  >
-    {f}
-  </button>
-))}
-      </div>
-
       <div className="grid">
+
         {filtered.map(song => (
-          <Link key={song.id} href={`/song/${song.id}`} className="card">
-            <h2>{song.title}</h2>
+          <Link
+            key={song.id}
+            href={`/song/${song.id}`}
+            className="card"
+          >
+
+            <h2>
+              {song.title}
+            </h2>
+
             <div className="muted">
-              {song.region ? `${song.region} · ` : ''}
-              {song.image_filename ? 'Zdjęcie dodane' : song.lyrics ? 'Tekst dodany' : 'Brak tekstu'}
+
+              {song.region
+                ? `${song.region} · `
+                : ''}
+
+              {song.image_filename
+                ? 'Zdjęcie dodane'
+                : song.lyrics
+                  ? 'Tekst dodany'
+                  : 'Brak tekstu'}
+
             </div>
+
             {(song.tags || []).length > 0 && (
-              <div className="tagline">{song.tags?.join(', ')}</div>
+              <div className="tagline">
+                {song.tags?.join(', ')}
+              </div>
             )}
-            <span className="button">Otwórz</span>
+
+            <span className="button">
+              Otwórz
+            </span>
+
           </Link>
         ))}
+
       </div>
+
     </main>
   )
 }
