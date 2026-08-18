@@ -30,7 +30,7 @@ export default function Home() {
   const [pass, setPass] = useState('')
   const [songs, setSongs] = useState<Song[]>([])
   const [q, setQ] = useState('')
-  const [region, setRegion] = useState('Wszystkie')
+  const [filter, setFilter] = useState('Wszystkie')
   const [showAdd, setShowAdd] = useState(false)
 
   const [newTitle, setNewTitle] = useState('')
@@ -101,12 +101,23 @@ export default function Home() {
     loadSongs()
   }
 
-  const regions = useMemo(() => {
-    const values = songs
-      .map(s => s.region?.trim())
-      .filter((v): v is string => Boolean(v))
-    return ['Wszystkie', ...Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, 'pl'))]
-  }, [songs])
+  const filters = useMemo(() => {
+  const regions = songs
+    .map(s => s.region?.trim())
+    .filter((v): v is string => Boolean(v))
+
+  const tags = songs
+    .flatMap(s => s.tags || [])
+    .map(t => t.trim())
+    .filter(Boolean)
+
+  return [
+    'Wszystkie',
+    ...Array.from(new Set([...regions, ...tags])).sort((a, b) =>
+      a.localeCompare(b, 'pl')
+    ),
+  ]
+}, [songs])
 
   const filtered = useMemo(() => {
     const nq = norm(q)
@@ -116,10 +127,12 @@ export default function Home() {
         norm(s.lyrics || '').includes(nq) ||
         norm((s.tags || []).join(' ')).includes(nq)
 
-      const matchesRegion =
-        region === 'Wszystkie' || s.region === region
+      const matchesFilter =
+  filter === 'Wszystkie' ||
+  s.region === filter ||
+  (s.tags || []).includes(filter)
 
-      return matchesText && matchesRegion
+return matchesText && matchesFilter
     })
   }, [songs, q, region])
 
@@ -179,15 +192,15 @@ export default function Home() {
       />
 
       <div className="filters">
-        {regions.map(r => (
-          <button
-            key={r}
-            className={region === r ? 'filter active' : 'filter'}
-            onClick={() => setRegion(r)}
-          >
-            {r}
-          </button>
-        ))}
+        {filters.map(f => (
+  <button
+    key={f}
+    className={filter === f ? 'filter active' : 'filter'}
+    onClick={() => setFilter(f)}
+  >
+    {f}
+  </button>
+))}
       </div>
 
       <div className="grid">
