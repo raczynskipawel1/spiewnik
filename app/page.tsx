@@ -92,12 +92,14 @@ export default function Home() {
       return alert('Wpisz tytuł')
     }
 
+    const cleanTag = newTags.trim()
+
     const { error } = await supabase.from('songs').insert({
       title: newTitle.trim(),
       normalized_title: norm(newTitle.trim()),
       lyrics: newLyrics.trim(),
       region: newRegion.trim() || null,
-      tags: parseTags(newTags),
+      tags: cleanTag ? [cleanTag] : [],
     })
 
     if (error) {
@@ -239,17 +241,24 @@ export default function Home() {
 
           <input
             className="search"
-            placeholder="Region, np. Lublin / Spisz / Kolędy"
+            placeholder="Region, np. Lublin / Spisz / Kaszuby"
             value={newRegion}
             onChange={e => setNewRegion(e.target.value)}
           />
 
-          <input
-            className="search"
-            placeholder="Tagi po przecinku, np. ludowe, koleda"
+          <select
+            className="add-type-select"
             value={newTags}
             onChange={e => setNewTags(e.target.value)}
-          />
+          >
+            {tags
+              .filter(tag => tag !== 'Wszystkie')
+              .map(tag => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+          </select>
 
           <textarea
             className="textarea"
