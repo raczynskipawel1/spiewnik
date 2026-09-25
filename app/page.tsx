@@ -146,116 +146,66 @@ export default function Home() {
   }
 
   return (
-    <main className="page">
-
-      <div className="header">
-
-        <div>
-          <div className="logo">
-            Śpiewnik Online
-          </div>
-
-          <div className="sub">
-            {filtered.length} z {songs.length} piosenek
-          </div>
-        </div>
-
-        <div className="header-actions">
-
-          <Link className="button" href="/admin">Panel administratora</Link>
-
-          <button
-            className="button secondary"
-            onClick={logout}
-          >
-            Wyloguj
-          </button>
-
-        </div>
-      </div>
-
-
-      <div className="filter-row">
-
-        <label>
-          Typ
-          <select
-            value={selectedTag}
-            onChange={e => setSelectedTag(e.target.value)}
-          >
-            {tags.map(tag => (
-              <option key={tag} value={tag}>
-                {tag}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Region
-          <select
-            value={selectedRegion}
-            onChange={e => setSelectedRegion(e.target.value)}
-          >
-            {regions.map(region => (
-              <option key={region} value={region}>
-                {region}
-              </option>
-            ))}
-          </select>
-        </label>
-
-      </div>
-
-      <input
-        className="search"
-        placeholder="Szukaj po tytule, tekście albo tagach..."
-        value={q}
-        onChange={e => setQ(e.target.value)}
-      />
-
-      <div className="grid">
-
-        {filtered.map(song => (
-          <Link
-            key={song.id}
-            href={`/song/${song.id}`}
-            className="card"
-          >
-
-            <h2>
-              {song.title}
-            </h2>
-
-            <div className="muted">
-
-              {song.region
-                ? `${song.region} · `
-                : ''}
-
-              {song.image_filename
-                ? 'Zdjęcie dodane'
-                : song.lyrics
-                  ? 'Tekst dodany'
-                  : 'Brak tekstu'}
-
+    <main className="songbook-shell">
+      <header className="folk-header">
+        <div className="folk-header-inner">
+          <div className="brand-wrap">
+            <div className="brand-logo-wrap">
+              <img className="brand-logo" src="/logo-zpit-dabrowica.png" alt="Logo Zespołu Pieśni i Tańca Dąbrowica" />
             </div>
+            <div className="brand-divider" />
+            <div>
+              <h1 className="brand-title">Zespół Pieśni i Tańca Dąbrowica</h1>
+              <div className="brand-subtitle">Śpiewnik</div>
+            </div>
+          </div>
 
-            {(song.tags || []).length > 0 && (
-              <div className="tagline">
-                {song.tags?.join(', ')}
-              </div>
-            )}
+          <Link className="admin-link" href="/admin">⚙ Panel administratora</Link>
+        </div>
+      </header>
 
-            <span className="button">
-              Otwórz
-            </span>
+      <section className="songbook-content">
+        <input
+          className="search search-main"
+          placeholder="Szukaj po tytule, tekście albo tagach..."
+          value={q}
+          onChange={e => setQ(e.target.value)}
+        />
 
-          </Link>
-        ))}
+        <div className="filter-row folk-filters">
+          <label>
+            Typ
+            <select value={selectedTag} onChange={e => setSelectedTag(e.target.value)}>
+              {tags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
+            </select>
+          </label>
+          <label>
+            Region
+            <select value={selectedRegion} onChange={e => setSelectedRegion(e.target.value)}>
+              {regions.map(region => <option key={region} value={region}>{region}</option>)}
+            </select>
+          </label>
+        </div>
 
-      </div>
+        <div className="song-count">♪ {filtered.length} z {songs.length} piosenek</div>
 
+        <div className="grid folk-grid">
+          {filtered.map(song => (
+            <Link key={song.id} href={`/song/${song.id}`} className="card folk-card">
+              <div className="card-chevron">›</div>
+              <h2>{song.title}</h2>
+              {(song.tags || []).length > 0 && (
+                <div className="folk-tags">
+                  {song.tags?.map(tag => <span className="folk-tag" key={tag}>{tag}</span>)}
+                </div>
+              )}
+              {song.region && <div className="card-region">⌖ {song.region}</div>}
+              {song.lyrics && (
+                <p className="lyrics-preview">{song.lyrics.replace(/\n+/g, ' ').slice(0, 115)}{song.lyrics.length > 115 ? '…' : ''}</p>
+              )}
+            </Link>
+          ))}
+        </div>
+      </section>
     </main>
-  )
-}
+  )}
