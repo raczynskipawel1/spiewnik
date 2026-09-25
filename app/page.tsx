@@ -38,6 +38,7 @@ export default function Home() {
     if (localStorage.getItem('songbook-ok') === '1') {
       setOk(true)
     }
+
   }, [])
 
   async function loadSongs() {
@@ -64,7 +65,6 @@ export default function Home() {
 
   function logout() {
     localStorage.removeItem('songbook-ok')
-    localStorage.removeItem('songbook-admin')
     setOk(false)
     setPass('')
   }
@@ -162,9 +162,7 @@ export default function Home() {
 
         <div className="header-actions">
 
-          <Link className="button" href="/admin">
-            Panel administratora
-          </Link>
+          <Link className="button" href="/admin">Panel administratora</Link>
 
           <button
             className="button secondary"

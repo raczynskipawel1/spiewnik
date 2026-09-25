@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { supabase, imageUrl } from '@/lib/supabase'
 
 type Song = {
@@ -28,6 +28,7 @@ function parseTags(value: string) {
 
 export default function SongPage() {
   const params = useParams()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [song, setSong] = useState<Song | null>(null)
   const [admin, setAdmin] = useState(false)
@@ -40,10 +41,7 @@ export default function SongPage() {
   const [editedNotes, setEditedNotes] = useState('')
 
   useEffect(() => {
-    if (localStorage.getItem('songbook-admin') === '1') {
-      setAdmin(true)
-      if (searchParams.get('edit') === '1') setEditing(true)
-    }
+    fetch('/api/admin/session').then(r=>r.json()).then(x=>{ if(x.authenticated){ setAdmin(true); if(searchParams.get('edit')==='1') setEditing(true) } })
   }, [])
 
   useEffect(() => {
@@ -76,20 +74,16 @@ export default function SongPage() {
       notes: editedNotes.trim() || null,
     }
 
-    const { error } = await supabase
-      .from('songs')
-      .update(updated)
-      .eq('id', song.id)
-
-    if (error) {
-      alert('Błąd zapisu: ' + error.message)
-      return
-    }
+    const r = await fetch(`/api/admin/songs/${song.id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(updated) })
+    const result = await r.json()
+    if (!r.ok) { alert('Błąd zapisu: ' + (result.error || r.statusText)); return }
 
     setSong({ ...song, ...updated })
     setEditing(false)
     alert('Zapisano zmiany')
   }
+
+
 
   if (!song) return <main className="page">Ładowanie...</main>
 

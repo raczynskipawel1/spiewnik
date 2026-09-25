@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type Song = { id: string; title: string; lyrics: string | null; region: string | null; tags: string[] | null }
@@ -10,10 +9,9 @@ type Song = { id: string; title: string; lyrics: string | null; region: string |
 function norm(s: string) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') }
 
 export default function AdminPage() {
-  const router = useRouter()
   const [ready, setReady] = useState(false)
-  const [adminOk, setAdminOk] = useState(false)
-  const [adminPass, setAdminPass] = useState('')
+  const [authenticated, setAuthenticated] = useState(false)
+  const [password, setPassword] = useState('')
   const [songs, setSongs] = useState<Song[]>([])
   const [q, setQ] = useState('')
   const [showAdd, setShowAdd] = useState(false)
@@ -23,33 +21,23 @@ export default function AdminPage() {
   const [newTag, setNewTag] = useState('ludowe')
 
   useEffect(() => {
-    if (localStorage.getItem('songbook-ok') !== '1') { router.replace('/'); return }
-    setAdminOk(localStorage.getItem('songbook-admin') === '1')
-    setReady(true)
-  }, [router])
+    fetch('/api/admin/session').then(r=>r.json()).then(x=>{ setAuthenticated(Boolean(x.authenticated)); setReady(true) }).catch(()=>setReady(true))
+  }, [])
 
-
-  function adminLogin() {
-    if (adminPass === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      localStorage.setItem('songbook-admin', '1')
-      setAdminOk(true)
-      setAdminPass('')
-    } else {
-      alert('Złe hasło administratora')
-    }
+  async function loginAdmin() {
+    const r = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password}) })
+    if (!r.ok) return alert('Złe hasło administratora')
+    setAuthenticated(true); setPassword('')
   }
 
-  function adminLogout() {
-    localStorage.removeItem('songbook-admin')
-    setAdminOk(false)
-  }
+  async function logoutAdmin() { await fetch('/api/admin/logout',{method:'POST'}); setAuthenticated(false); setSongs([]) }
 
   async function loadSongs() {
     const { data, error } = await supabase.from('songs').select('id,title,lyrics,region,tags').order('title')
     if (error) return alert('Błąd pobierania: ' + error.message)
     setSongs((data || []) as Song[])
   }
-  useEffect(() => { if (ready && adminOk) loadSongs() }, [ready, adminOk])
+  useEffect(() => { if (ready && authenticated) loadSongs() }, [ready, authenticated])
 
   const tags = useMemo(() => Array.from(new Set(songs.flatMap(s => s.tags || []).filter(Boolean))).sort((a,b) => a.localeCompare(b,'pl')), [songs])
   const filtered = useMemo(() => {
@@ -59,37 +47,30 @@ export default function AdminPage() {
 
   async function addSong() {
     if (!newTitle.trim()) return alert('Wpisz tytuł')
-    const { error } = await supabase.from('songs').insert({
+    const r = await fetch('/api/admin/songs', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
       title: newTitle.trim(), normalized_title: norm(newTitle.trim()), lyrics: newLyrics.trim(),
       region: newRegion.trim() || null, tags: newTag.trim() ? [newTag.trim()] : []
-    })
-    if (error) return alert('Błąd zapisu: ' + error.message)
+    }) })
+    const result = await r.json()
+    if (!r.ok) return alert('Błąd zapisu: ' + (result.error || r.statusText))
     setNewTitle(''); setNewLyrics(''); setNewRegion(''); setNewTag('ludowe'); setShowAdd(false); await loadSongs()
   }
 
   async function deleteSong(song: Song) {
     if (!confirm(`Usunąć piosenkę „${song.title}”?\n\nTej operacji nie można cofnąć.`)) return
-    const { error } = await supabase.from('songs').delete().eq('id', song.id)
-    if (error) return alert('Błąd usuwania: ' + error.message)
+    const r = await fetch(`/api/admin/songs/${song.id}`, { method:'DELETE' })
+    const result = await r.json()
+    if (!r.ok) return alert('Błąd usuwania: ' + (result.error || r.statusText))
     setSongs(current => current.filter(s => s.id !== song.id))
   }
 
   if (!ready) return <main className="page">Ładowanie...</main>
-
-  if (!adminOk) return <main className="login">
-    <div className="loginbox">
-      <h1>Panel administratora</h1>
-      <p className="muted">Wpisz hasło administratora.</p>
-      <input type="password" value={adminPass} onChange={e => setAdminPass(e.target.value)} onKeyDown={e => e.key === 'Enter' && adminLogin()} />
-      <button onClick={adminLogin}>Wejdź do panelu</button>
-      <Link href="/" className="toplink" style={{ display: 'block', marginTop: '18px' }}>← Wróć do śpiewnika</Link>
-    </div>
-  </main>
+  if (!authenticated) return <main className="login"><div className="loginbox"><h1>Panel administratora</h1><p className="muted">Wpisz hasło administratora.</p><input type="password" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==='Enter'&&loginAdmin()} /><button onClick={loginAdmin}>Zaloguj</button><p><Link href="/" className="toplink">← Wróć do śpiewnika</Link></p></div></main>
 
   return <main className="page">
     <div className="admin-head">
       <div><Link href="/" className="toplink">← Wróć do śpiewnika</Link><h1>Panel administratora</h1><p className="muted">{songs.length} piosenek</p></div>
-      <div className="header-actions"><button className="button" onClick={() => setShowAdd(v => !v)}>➕ Dodaj piosenkę</button><button className="button secondary" onClick={adminLogout}>Wyloguj z panelu</button></div>
+      <div><button className="button" onClick={() => setShowAdd(v => !v)}>➕ Dodaj piosenkę</button> <button className="button secondary" onClick={logoutAdmin}>Wyloguj z panelu</button></div>
     </div>
 
     {showAdd && <div className="detail addbox">
