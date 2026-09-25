@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Śpiewnik Online',
-  description: 'Prywatny śpiewnik zespołowy',
+  title: 'Zespół Pieśni i Tańca Dąbrowica – Śpiewnik',
+  description: 'Śpiewnik Zespołu Pieśni i Tańca Dąbrowica',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
