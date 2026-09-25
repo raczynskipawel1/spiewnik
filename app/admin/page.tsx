@@ -12,6 +12,8 @@ function norm(s: string) { return s.toLowerCase().normalize('NFD').replace(/[\u0
 export default function AdminPage() {
   const router = useRouter()
   const [ready, setReady] = useState(false)
+  const [adminOk, setAdminOk] = useState(false)
+  const [adminPass, setAdminPass] = useState('')
   const [songs, setSongs] = useState<Song[]>([])
   const [q, setQ] = useState('')
   const [showAdd, setShowAdd] = useState(false)
@@ -21,16 +23,33 @@ export default function AdminPage() {
   const [newTag, setNewTag] = useState('ludowe')
 
   useEffect(() => {
-    if (localStorage.getItem('songbook-admin') !== '1') { router.replace('/'); return }
+    if (localStorage.getItem('songbook-ok') !== '1') { router.replace('/'); return }
+    setAdminOk(localStorage.getItem('songbook-admin') === '1')
     setReady(true)
   }, [router])
+
+
+  function adminLogin() {
+    if (adminPass === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      localStorage.setItem('songbook-admin', '1')
+      setAdminOk(true)
+      setAdminPass('')
+    } else {
+      alert('Złe hasło administratora')
+    }
+  }
+
+  function adminLogout() {
+    localStorage.removeItem('songbook-admin')
+    setAdminOk(false)
+  }
 
   async function loadSongs() {
     const { data, error } = await supabase.from('songs').select('id,title,lyrics,region,tags').order('title')
     if (error) return alert('Błąd pobierania: ' + error.message)
     setSongs((data || []) as Song[])
   }
-  useEffect(() => { if (ready) loadSongs() }, [ready])
+  useEffect(() => { if (ready && adminOk) loadSongs() }, [ready, adminOk])
 
   const tags = useMemo(() => Array.from(new Set(songs.flatMap(s => s.tags || []).filter(Boolean))).sort((a,b) => a.localeCompare(b,'pl')), [songs])
   const filtered = useMemo(() => {
@@ -57,10 +76,20 @@ export default function AdminPage() {
 
   if (!ready) return <main className="page">Ładowanie...</main>
 
+  if (!adminOk) return <main className="login">
+    <div className="loginbox">
+      <h1>Panel administratora</h1>
+      <p className="muted">Wpisz hasło administratora.</p>
+      <input type="password" value={adminPass} onChange={e => setAdminPass(e.target.value)} onKeyDown={e => e.key === 'Enter' && adminLogin()} />
+      <button onClick={adminLogin}>Wejdź do panelu</button>
+      <Link href="/" className="toplink" style={{ display: 'block', marginTop: '18px' }}>← Wróć do śpiewnika</Link>
+    </div>
+  </main>
+
   return <main className="page">
     <div className="admin-head">
       <div><Link href="/" className="toplink">← Wróć do śpiewnika</Link><h1>Panel administratora</h1><p className="muted">{songs.length} piosenek</p></div>
-      <button className="button" onClick={() => setShowAdd(v => !v)}>➕ Dodaj piosenkę</button>
+      <div className="header-actions"><button className="button" onClick={() => setShowAdd(v => !v)}>➕ Dodaj piosenkę</button><button className="button secondary" onClick={adminLogout}>Wyloguj z panelu</button></div>
     </div>
 
     {showAdd && <div className="detail addbox">

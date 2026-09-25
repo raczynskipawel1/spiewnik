@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import { supabase, imageUrl } from '@/lib/supabase'
 
 type Song = {
@@ -28,7 +28,6 @@ function parseTags(value: string) {
 
 export default function SongPage() {
   const params = useParams()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [song, setSong] = useState<Song | null>(null)
   const [admin, setAdmin] = useState(false)
@@ -92,14 +91,6 @@ export default function SongPage() {
     alert('Zapisano zmiany')
   }
 
-  async function deleteSong() {
-    if (!song || !admin) return
-    if (!confirm(`Usunąć piosenkę „${song.title}”?\n\nTej operacji nie można cofnąć.`)) return
-    const { error } = await supabase.from('songs').delete().eq('id', song.id)
-    if (error) return alert('Błąd usuwania: ' + error.message)
-    router.push('/admin')
-  }
-
   if (!song) return <main className="page">Ładowanie...</main>
 
   const img = imageUrl(song.image_filename)
@@ -121,7 +112,6 @@ export default function SongPage() {
             {admin && (
               <div className="song-admin-actions">
                 <button className="button" onClick={() => setEditing(true)}>✏️ Edytuj piosenkę</button>
-                <button className="button danger" onClick={deleteSong}>🗑️ Usuń piosenkę</button>
               </div>
             )}
 

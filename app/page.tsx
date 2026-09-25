@@ -26,7 +26,6 @@ function parseTags(value: string) {
 
 export default function Home() {
   const [ok, setOk] = useState(false)
-  const [admin, setAdmin] = useState(false)
   const [pass, setPass] = useState('')
   const [songs, setSongs] = useState<Song[]>([])
   const [q, setQ] = useState('')
@@ -38,11 +37,6 @@ export default function Home() {
   useEffect(() => {
     if (localStorage.getItem('songbook-ok') === '1') {
       setOk(true)
-    }
-
-    if (localStorage.getItem('songbook-admin') === '1') {
-      setOk(true)
-      setAdmin(true)
     }
   }, [])
 
@@ -60,12 +54,7 @@ export default function Home() {
   }, [ok])
 
   function login() {
-    if (pass === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      localStorage.setItem('songbook-ok', '1')
-      localStorage.setItem('songbook-admin', '1')
-      setOk(true)
-      setAdmin(true)
-    } else if (pass === process.env.NEXT_PUBLIC_SONGBOOK_PASSWORD) {
+    if (pass === process.env.NEXT_PUBLIC_SONGBOOK_PASSWORD) {
       localStorage.setItem('songbook-ok', '1')
       setOk(true)
     } else {
@@ -77,7 +66,6 @@ export default function Home() {
     localStorage.removeItem('songbook-ok')
     localStorage.removeItem('songbook-admin')
     setOk(false)
-    setAdmin(false)
     setPass('')
   }
 
@@ -174,11 +162,9 @@ export default function Home() {
 
         <div className="header-actions">
 
-          {admin && (
-            <Link className="button" href="/admin">
-              Panel administratora
-            </Link>
-          )}
+          <Link className="button" href="/admin">
+            Panel administratora
+          </Link>
 
           <button
             className="button secondary"
