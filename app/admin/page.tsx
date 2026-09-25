@@ -19,6 +19,7 @@ export default function AdminPage() {
   const [newLyrics, setNewLyrics] = useState('')
   const [newRegion, setNewRegion] = useState('')
   const [newTag, setNewTag] = useState('ludowe')
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     fetch('/api/admin/session').then(r=>r.json()).then(x=>{ setAuthenticated(Boolean(x.authenticated)); setReady(true) }).catch(()=>setReady(true))
@@ -30,7 +31,10 @@ export default function AdminPage() {
     setAuthenticated(true); setPassword('')
   }
 
-  async function logoutAdmin() { await fetch('/api/admin/logout',{method:'POST'}); setAuthenticated(false); setSongs([]) }
+  async function logoutAdmin() {
+    await fetch('/api/admin/logout',{method:'POST'})
+    window.location.href = '/'
+  }
 
   async function loadSongs() {
     const { data, error } = await supabase.from('songs').select('id,title,lyrics,region,tags').order('title')
@@ -62,6 +66,10 @@ export default function AdminPage() {
     const result = await r.json()
     if (!r.ok) return alert('Błąd usuwania: ' + (result.error || r.statusText))
     setSongs(current => current.filter(s => s.id !== song.id))
+    setQ('')
+    setSuccessMessage('Piosenka została usunięta ✓')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.setTimeout(() => setSuccessMessage(''), 4000)
   }
 
   if (!ready) return <main className="page">Ładowanie...</main>
@@ -72,6 +80,8 @@ export default function AdminPage() {
       <div><Link href="/" className="toplink">← Wróć do śpiewnika</Link><h1>Panel administratora</h1><p className="muted">{songs.length} piosenek</p></div>
       <div><button className="button" onClick={() => setShowAdd(v => !v)}>➕ Dodaj piosenkę</button> <button className="button secondary" onClick={logoutAdmin}>Wyloguj z panelu</button></div>
     </div>
+
+    {successMessage && <div className="admin-success">{successMessage}</div>}
 
     {showAdd && <div className="detail addbox">
       <h2>Dodaj piosenkę</h2>

@@ -357,3 +357,5 @@ a {
   .admin-row-actions { flex-wrap:wrap; }
   .admin-row-actions .button { flex:1; text-align:center; }
 }
+
+.admin-success { margin: 0 0 18px; padding: 12px 16px; background: #eef7e8; border: 1px solid #bfd8ae; border-radius: 12px; font-weight: 600; }
