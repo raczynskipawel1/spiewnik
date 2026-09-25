@@ -34,12 +34,6 @@ export default function Home() {
   const [selectedTag, setSelectedTag] = useState('Wszystkie')
   const [selectedRegion, setSelectedRegion] = useState('Wszystkie')
 
-  const [showAdd, setShowAdd] = useState(false)
-
-  const [newTitle, setNewTitle] = useState('')
-  const [newLyrics, setNewLyrics] = useState('')
-  const [newRegion, setNewRegion] = useState('')
-  const [newTags, setNewTags] = useState('ludowe')
 
   useEffect(() => {
     if (localStorage.getItem('songbook-ok') === '1') {
@@ -87,34 +81,6 @@ export default function Home() {
     setPass('')
   }
 
-  async function addSong() {
-    if (!newTitle.trim()) {
-      return alert('Wpisz tytuł')
-    }
-
-    const cleanTag = newTags.trim()
-
-    const { error } = await supabase.from('songs').insert({
-      title: newTitle.trim(),
-      normalized_title: norm(newTitle.trim()),
-      lyrics: newLyrics.trim(),
-      region: newRegion.trim() || null,
-      tags: cleanTag ? [cleanTag] : [],
-    })
-
-    if (error) {
-      alert('Błąd zapisu: ' + error.message)
-      return
-    }
-
-    setNewTitle('')
-    setNewLyrics('')
-    setNewRegion('')
-    setNewTags('ludowe')
-    setShowAdd(false)
-
-    loadSongs()
-  }
 
   const tags = useMemo(() => {
     const values = songs
@@ -209,12 +175,9 @@ export default function Home() {
         <div className="header-actions">
 
           {admin && (
-            <button
-              className="button"
-              onClick={() => setShowAdd(!showAdd)}
-            >
-              ➕ Dodaj piosenkę
-            </button>
+            <Link className="button" href="/admin">
+              Panel administratora
+            </Link>
           )}
 
           <button
@@ -227,55 +190,6 @@ export default function Home() {
         </div>
       </div>
 
-      {admin && showAdd && (
-        <div className="detail addbox">
-
-          <h2>Dodaj piosenkę</h2>
-
-          <input
-            className="search"
-            placeholder="Tytuł"
-            value={newTitle}
-            onChange={e => setNewTitle(e.target.value)}
-          />
-
-          <input
-            className="search"
-            placeholder="Region, np. Lublin / Spisz / Kaszuby"
-            value={newRegion}
-            onChange={e => setNewRegion(e.target.value)}
-          />
-
-          <select
-            className="add-type-select"
-            value={newTags}
-            onChange={e => setNewTags(e.target.value)}
-          >
-            {tags
-              .filter(tag => tag !== 'Wszystkie')
-              .map(tag => (
-                <option key={tag} value={tag}>
-                  {tag}
-                </option>
-              ))}
-          </select>
-
-          <textarea
-            className="textarea"
-            placeholder="Tekst piosenki"
-            value={newLyrics}
-            onChange={e => setNewLyrics(e.target.value)}
-          />
-
-          <button
-            className="button"
-            onClick={addSong}
-          >
-            Zapisz piosenkę
-          </button>
-
-        </div>
-      )}
 
       <div className="filter-row">
 

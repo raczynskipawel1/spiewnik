@@ -334,3 +334,26 @@ a {
   border-color: #241b12;
   box-shadow: 0 0 0 3px rgba(36, 27, 18, 0.08);
 }
+
+/* Panel administratora */
+.admin-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:22px; }
+.admin-head h1 { margin: 4px 0 4px; }
+.admin-list { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+.admin-row { background:#fff; border:1px solid #e0d6c8; border-radius:16px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.admin-song-info { display:flex; flex-direction:column; gap:5px; min-width:0; }
+.admin-song-info strong { font-size:17px; }
+.admin-song-info span { color:#756b61; font-size:13px; }
+.admin-row-actions { display:flex; gap:8px; flex-shrink:0; }
+.button.compact { margin-top:0; padding:8px 11px; border:none; font:inherit; cursor:pointer; }
+.button.secondary.compact { border:1px solid #d8cdbf; }
+.button.danger { background:#a52a2a; border:1px solid #a52a2a; cursor:pointer; }
+.admin-input { margin-top:10px; margin-bottom:10px; }
+.admin-cancel { margin-left:10px; cursor:pointer; }
+.song-admin-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.song-admin-actions .button { border:none; font:inherit; cursor:pointer; }
+
+@media (max-width: 700px) {
+  .admin-head, .admin-row { flex-direction:column; align-items:stretch; }
+  .admin-row-actions { flex-wrap:wrap; }
+  .admin-row-actions .button { flex:1; text-align:center; }
+}
