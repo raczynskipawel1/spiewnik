@@ -100,7 +100,7 @@ export default function SongPage() {
     supabase
       .from('songs')
       .select('*')
-      .eq('id', params.slug)
+      .eq('slug', params.slug)
       .single()
       .then(({ data }) => {
         const loaded = data as Song
