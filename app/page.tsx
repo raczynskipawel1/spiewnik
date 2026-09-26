@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 
 type Song = {
   id: string
+  slug: string
   title: string
   lyrics: string | null
   image_filename: string | null
