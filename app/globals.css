@@ -467,3 +467,157 @@ a {
   .region-ornament { right:6px; bottom:4px; width:88px; height:88px; opacity:.58; }
 }
 
+/* =========================================================
+   STRONA POJEDYNCZEJ PIOSENKI
+   ========================================================= */
+
+.song-detail-shell {
+  min-height: 100vh;
+  background: #f7f3eb;
+}
+
+.song-detail-content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px 30px 50px;
+}
+
+.song-detail-content .toplink {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.song-detail-content .detail {
+  padding: 30px 34px 40px;
+  box-shadow: 0 8px 24px rgba(70, 49, 30, .05);
+}
+
+/* Tytuł piosenki */
+
+.song-detail-content .detail > h1 {
+  margin: 0 0 16px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.12;
+  color: #162b35;
+}
+
+/* Region + typ piosenki */
+
+.song-meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.region-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  background: #f3ede5;
+  color: #5e4b3c;
+
+  border: 1px solid #e0d6c8;
+  border-radius: 999px;
+
+  padding: 4px 11px 4px 6px;
+
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.region-badge img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex: 0 0 28px;
+}
+
+/* Tagi na stronie piosenki takie jak na kafelkach */
+
+.song-meta-tags .folk-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 11px;
+  font-weight: 600;
+}
+
+/* Przycisk edycji */
+
+.song-detail-content .song-admin-actions {
+  margin: 4px 0 22px;
+}
+
+/* Tekst piosenki */
+
+.song-detail-content .lyrics {
+  margin-top: 22px;
+  max-width: 850px;
+  font-size: 19px;
+  line-height: 1.6;
+}
+
+/* =========================
+   TELEFON
+   ========================= */
+
+@media (max-width: 650px) {
+
+  .song-detail-content {
+    padding: 18px 14px 36px;
+  }
+
+  .song-detail-content .toplink {
+    margin-left: 4px;
+    margin-bottom: 14px;
+    font-size: 16px;
+  }
+
+  .song-detail-content .detail {
+    padding: 24px 20px 30px;
+    border-radius: 20px;
+  }
+
+  .song-detail-content .detail > h1 {
+    font-size: 32px;
+    line-height: 1.12;
+    margin-bottom: 14px;
+  }
+
+  .song-meta-tags {
+    gap: 7px;
+    margin-bottom: 18px;
+  }
+
+  .region-badge {
+    font-size: 13px;
+    padding: 4px 10px 4px 5px;
+  }
+
+  .region-badge img {
+    width: 25px;
+    height: 25px;
+    flex-basis: 25px;
+  }
+
+  .song-meta-tags .folk-tag {
+    min-height: 33px;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .song-detail-content .lyrics {
+    font-size: 18px;
+    line-height: 1.58;
+    margin-top: 20px;
+  }
+
+  .song-detail-content .song-admin-actions {
+    margin-bottom: 18px;
+  }
+}
