@@ -6,7 +6,13 @@ import { supabase } from '@/lib/supabase'
 
 type Song = { id: string; title: string; lyrics: string | null; region: string | null; tags: string[] | null }
 
-function norm(s: string) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') }
+function norm(s: string) {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ł/g, 'l')
+}
 
 export default function AdminPage() {
   const [ready, setReady] = useState(false)
@@ -75,36 +81,175 @@ export default function AdminPage() {
   if (!ready) return <main className="page">Ładowanie...</main>
   if (!authenticated) return <main className="login"><div className="loginbox"><h1>Panel administratora</h1><p className="muted">Wpisz hasło administratora.</p><input type="password" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==='Enter'&&loginAdmin()} /><button onClick={loginAdmin}>Zaloguj</button><p><Link href="/" className="toplink">← Wróć do śpiewnika</Link></p></div></main>
 
-  return <main className="page">
-    <div className="admin-head">
-      <div><Link href="/" className="toplink">← Wróć do śpiewnika</Link><h1>Panel administratora</h1><p className="muted">{songs.length} piosenek</p></div>
-      <div><button className="button" onClick={() => setShowAdd(v => !v)}>➕ Dodaj piosenkę</button> <button className="button secondary" onClick={logoutAdmin}>Wyloguj z panelu</button></div>
-    </div>
+   return (
+    <main className="songbook-shell">
 
-    {successMessage && <div className="admin-success">{successMessage}</div>}
+      <header className="folk-header">
+        <div className="folk-header-inner">
 
-    {showAdd && <div className="detail addbox">
-      <h2>Dodaj piosenkę</h2>
-      <input className="search" placeholder="Tytuł" value={newTitle} onChange={e=>setNewTitle(e.target.value)} />
-      <input className="search admin-input" placeholder="Region" value={newRegion} onChange={e=>setNewRegion(e.target.value)} />
-      <select className="add-type-select" value={newTag} onChange={e=>setNewTag(e.target.value)}>
-        {tags.length ? tags.map(t=><option key={t}>{t}</option>) : <option>ludowe</option>}
-      </select>
-      <textarea className="textarea" placeholder="Tekst piosenki" value={newLyrics} onChange={e=>setNewLyrics(e.target.value)} />
-      <button className="button" onClick={addSong}>💾 Zapisz piosenkę</button>
-      <button className="button secondary admin-cancel" onClick={()=>setShowAdd(false)}>Anuluj</button>
-    </div>}
+          <div className="brand-wrap">
+            <div className="brand-logo-wrap">
+              <img
+                className="brand-logo"
+                src="/logo-zpit-dabrowica.png"
+                alt="Logo Zespołu Pieśni i Tańca Dąbrowica"
+              />
+            </div>
 
-    <input className="search" placeholder="Szukaj piosenki, regionu lub typu..." value={q} onChange={e=>setQ(e.target.value)} />
-    <div className="admin-list">
-      {filtered.map(song => <div className="admin-row" key={song.id}>
-        <div className="admin-song-info"><strong>{song.title}</strong><span>{song.region || 'Bez regionu'}{(song.tags || []).length ? ` · ${(song.tags || []).join(', ')}` : ''}</span></div>
-        <div className="admin-row-actions">
-          <Link className="button secondary compact" href={`/song/${song.id}`}>Podgląd</Link>
-          <Link className="button compact" href={`/song/${song.id}?edit=1`}>✏️ Edytuj</Link>
-          <button className="button danger compact" onClick={()=>deleteSong(song)}>🗑️ Usuń</button>
+            <div className="brand-divider" />
+
+            <div>
+              <h1 className="brand-title">
+                Zespół Pieśni i Tańca Dąbrowica
+              </h1>
+              <div className="brand-subtitle">Śpiewnik</div>
+            </div>
+          </div>
+
+          <Link className="admin-link" href="/">
+            ← Wróć do śpiewnika
+          </Link>
+
         </div>
-      </div>)}
-    </div>
-  </main>
+      </header>
+
+      <section className="songbook-content">
+
+        <div className="admin-head">
+          <div>
+            <h1>Panel administratora</h1>
+            <p className="muted">{songs.length} piosenek</p>
+          </div>
+
+          <div>
+            <button
+              className="button"
+              onClick={() => setShowAdd(v => !v)}
+            >
+              ➕ Dodaj piosenkę
+            </button>
+
+            {' '}
+
+            <button
+              className="button secondary"
+              onClick={logoutAdmin}
+            >
+              Wyloguj z panelu
+            </button>
+          </div>
+        </div>
+
+        {successMessage && (
+          <div className="admin-success">
+            {successMessage}
+          </div>
+        )}
+
+        {showAdd && (
+          <div className="detail addbox">
+            <h2>Dodaj piosenkę</h2>
+
+            <input
+              className="search"
+              placeholder="Tytuł"
+              value={newTitle}
+              onChange={e => setNewTitle(e.target.value)}
+            />
+
+            <input
+              className="search admin-input"
+              placeholder="Region"
+              value={newRegion}
+              onChange={e => setNewRegion(e.target.value)}
+            />
+
+            <select
+              className="add-type-select"
+              value={newTag}
+              onChange={e => setNewTag(e.target.value)}
+            >
+              {tags.length
+                ? tags.map(t => <option key={t}>{t}</option>)
+                : <option>ludowe</option>
+              }
+            </select>
+
+            <textarea
+              className="textarea"
+              placeholder="Tekst piosenki"
+              value={newLyrics}
+              onChange={e => setNewLyrics(e.target.value)}
+            />
+
+            <button
+              className="button"
+              onClick={addSong}
+            >
+              💾 Zapisz piosenkę
+            </button>
+
+            <button
+              className="button secondary admin-cancel"
+              onClick={() => setShowAdd(false)}
+            >
+              Anuluj
+            </button>
+          </div>
+        )}
+
+        <input
+          className="search"
+          placeholder="Szukaj piosenki, regionu lub typu..."
+          value={q}
+          onChange={e => setQ(e.target.value)}
+        />
+
+        <div className="admin-list">
+          {filtered.map(song => (
+            <div className="admin-row" key={song.id}>
+
+              <div className="admin-song-info">
+                <strong>{song.title}</strong>
+
+                <span>
+                  {song.region || 'Bez regionu'}
+                  {(song.tags || []).length
+                    ? ` · ${(song.tags || []).join(', ')}`
+                    : ''
+                  }
+                </span>
+              </div>
+
+              <div className="admin-row-actions">
+
+                <Link
+                  className="button secondary compact"
+                  href={`/song/${song.id}`}
+                >
+                  Podgląd
+                </Link>
+
+                <Link
+                  className="button compact"
+                  href={`/song/${song.id}?edit=1`}
+                >
+                  ✏️ Edytuj
+                </Link>
+
+                <button
+                  className="button danger compact"
+                  onClick={() => deleteSong(song)}
+                >
+                  🗑️ Usuń
+                </button>
+
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </section>
+    </main>
+  )
 }
