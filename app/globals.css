@@ -464,3 +464,40 @@ a {
   .folk-card > h2, .folk-card > .folk-tags, .folk-card > .card-region, .folk-card > .lyrics-preview { max-width: calc(100% - 66px); }
   .region-ornament { right: 12px; bottom: 10px; width: 60px; height: 70px; font-size: 52px; opacity: .88; }
 }
+
+/* --- Docelowe ornamenty regionalne 2026-09-26 --- */
+.region-ornament {
+  position: absolute;
+  z-index: 1;
+  right: 10px;
+  bottom: 8px;
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  opacity: .72;
+  pointer-events: none;
+  filter: none;
+  transform: none;
+  text-shadow: none;
+}
+.folk-card > h2,
+.folk-card > .folk-tags,
+.folk-card > .card-region,
+.folk-card > .lyrics-preview { max-width: calc(100% - 96px); }
+
+/* Pastelowe tagi typów */
+.folk-tag { font-weight: 600; }
+.folk-tag.type-ludowe { background:#dff2e4; color:#176f38; }
+.folk-tag.type-patriotyczne { background:#fde0e0; color:#b4232a; }
+.folk-tag.type-koledy { background:#fff0c8; color:#94620b; }
+.folk-tag.type-biesiadne { background:#eee3f8; color:#6d3c8e; }
+.folk-tag.type-autokarowe { background:#dceeff; color:#145a8d; }
+.folk-tag.type-inne { background:#ece9e5; color:#5f5750; }
+
+@media (max-width: 650px) {
+  .region-ornament { width: 82px; height: 82px; right: 8px; bottom: 7px; opacity: .68; }
+  .folk-card > h2,
+  .folk-card > .folk-tags,
+  .folk-card > .card-region,
+  .folk-card > .lyrics-preview { max-width: calc(100% - 80px); }
+}

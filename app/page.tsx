@@ -21,31 +21,45 @@ function norm(s: string) {
 
 function regionKey(region: string | null) {
   const r = norm(region || '')
-  if (r.includes('bilgor')) return 'bilgorajskie'
-  if (r.includes('chelm')) return 'chelmskie'
-  if (r.includes('spis')) return 'spiskie'
-  if (r.includes('krak')) return 'krakowskie'
-  if (r.includes('lowicz')) return 'lowickie'
-  if (r.includes('rzesz')) return 'rzeszowskie'
-  if (r.includes('lubel')) return 'lubelskie'
-  return 'ogolny'
+  if (r.includes('bilgor')) return 'bilgoraj'
+  if (r.includes('chelm')) return 'chelm'
+  if (r.includes('rzesz')) return 'rzeszow'
+  if (r.includes('lowicz')) return 'lowicz'
+  if (r.includes('krak')) return 'krakow'
+  if (r.includes('nowy sacz') || r.includes('sadecz')) return 'nowy-sacz'
+  if (r.includes('podhale')) return 'podhale'
+  if (r.includes('powis')) return 'powisle'
+  if (r.includes('podlas')) return 'podlasie'
+  if (r.includes('spisz')) return 'spisz'
+  if (r.includes('slask')) return 'slask'
+  if (r.includes('zywiec')) return 'zywiec'
+  if (r.includes('lublin') || r.includes('lubel')) return 'lublin'
+  return 'ogolnopolskie'
+}
+
+function typeKey(tags: string[] | null) {
+  const t = norm((tags || []).join(' '))
+  if (t.includes('koled')) return 'koledy'
+  if (t.includes('biesiad')) return 'biesiadne'
+  if (t.includes('patriot')) return 'patriotyczne'
+  if (t.includes('autokar')) return 'autokarowe'
+  if (t.includes('ludow')) return 'ludowe'
+  return 'inne'
 }
 
 function typeIcon(tags: string[] | null) {
-  const t = norm((tags || []).join(' '))
-  if (t.includes('koled')) return '✦'
-  if (t.includes('biesiad')) return '🍷'
-  if (t.includes('patriot')) return '🇵🇱'
-  if (t.includes('autokar')) return '🚌'
-  if (t.includes('ludow')) return '✿'
+  const key = typeKey(tags)
+  if (key === 'koledy') return '✦'
+  if (key === 'biesiadne') return '🍷'
+  if (key === 'patriotyczne') return '🇵🇱'
+  if (key === 'autokarowe') return '🚌'
+  if (key === 'ludowe') return '✿'
   return '♪'
 }
 
 function RegionOrnament({ region }: { region: string | null }) {
   const key = regionKey(region)
-  return <span className={`region-ornament ornament-${key}`} aria-hidden="true">
-    {key === 'spiskie' ? '♠' : key === 'krakowskie' ? '◉' : key === 'lowickie' ? '✺' : key === 'rzeszowskie' ? '❋' : key === 'chelmskie' ? '✤' : key === 'bilgorajskie' ? '❦' : '❀'}
-  </span>
+  return <img className="region-ornament" src={`/ornaments/${key}.svg`} alt="" aria-hidden="true" />
 }
 
 function parseTags(value: string) {
@@ -228,7 +242,7 @@ export default function Home() {
               <h2>{song.title}</h2>
               {(song.tags || []).length > 0 && (
                 <div className="folk-tags">
-                  {song.tags?.map((tag, i) => <span className="folk-tag" key={tag}>{i === 0 && <span className="type-icon">{typeIcon(song.tags)}</span>}{tag}</span>)}
+                  {song.tags?.map((tag, i) => <span className={`folk-tag type-${typeKey(song.tags)}`} key={tag}>{i === 0 && <span className="type-icon">{typeIcon(song.tags)}</span>}{tag}</span>)}
                 </div>
               )}
               {song.region && <div className="card-region">⌖ {song.region}</div>}
