@@ -248,7 +248,7 @@ export default function Home() {
 
         <div className="grid folk-grid">
           {filtered.map(song => (
-            <Link key={song.id} href={`/song/${song.id}`} className={`card folk-card region-${regionKey(song.region)}`}>
+            <Link key={song.id} href={`/piosenka/${song.slug}`} className={`card folk-card region-${regionKey(song.region)}`}>
               <div className="card-chevron">›</div>
               <RegionOrnament region={song.region} />
               <h2>{song.title}</h2>
