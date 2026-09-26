@@ -4,7 +4,14 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-type Song = { id: string; title: string; lyrics: string | null; region: string | null; tags: string[] | null }
+type Song = {
+  id: string
+  slug: string
+  title: string
+  lyrics: string | null
+  region: string | null
+  tags: string[] | null
+}
 
 function norm(s: string) {
   return s
@@ -43,7 +50,7 @@ export default function AdminPage() {
   }
 
   async function loadSongs() {
-    const { data, error } = await supabase.from('songs').select('id,title,lyrics,region,tags').order('title')
+    const { data, error } = await supabase.from('songs').select('id,slug,title,lyrics,region,tags').order('title')
     if (error) return alert('Błąd pobierania: ' + error.message)
     setSongs((data || []) as Song[])
   }
