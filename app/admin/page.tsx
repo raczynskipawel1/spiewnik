@@ -232,14 +232,14 @@ export default function AdminPage() {
 
                 <Link
                   className="button secondary compact"
-                  href={`/song/${song.id}`}
+                  href={`/piosenka/${song.slug}`}
                 >
                   Podgląd
                 </Link>
 
                 <Link
                   className="button compact"
-                  href={`/song/${song.id}?edit=1`}
+                  href={`/piosenka/${song.slug}?edit=1`}
                 >
                   ✏️ Edytuj
                 </Link>
