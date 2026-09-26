@@ -621,3 +621,25 @@ a {
     margin-bottom: 18px;
   }
 }
+/* FIX ornamentu regionu na stronie piosenki */
+.song-detail-content .region-badge img {
+  position: static !important;
+  display: block !important;
+
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+
+  object-fit: contain !important;
+  margin: 0 !important;
+}
+
+.song-detail-content .region-badge {
+  display: inline-flex !important;
+  align-items: center;
+  width: auto !important;
+  max-width: 100%;
+}
