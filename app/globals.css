@@ -429,41 +429,41 @@ a {
   .folk-card { min-height: 0; }
 }
 
-/* --- Regionalne akcenty kafelków (nagłówek bez zmian) --- */
+/* --- Regionalne ornamenty kafelków (nagłówek bez zmian) --- */
 .folk-card { overflow: hidden; }
 .folk-card > h2,
 .folk-card > .folk-tags,
 .folk-card > .card-region,
-.folk-card > .lyrics-preview { position: relative; z-index: 2; max-width: calc(100% - 78px); }
+.folk-card > .lyrics-preview { position: relative; z-index: 2; max-width: calc(100% - 112px); }
 .type-icon { margin-right: 5px; font-size: .95em; }
+
+/* Kolory typów piosenek */
+.folk-tag.tag-ludowe { background:#dff2e4; color:#176f38; }
+.folk-tag.tag-patriotyczne { background:#fde0df; color:#b4232c; }
+.folk-tag.tag-koledy { background:#fff0c9; color:#8a5a00; }
+.folk-tag.tag-biesiadne { background:#eee2f8; color:#6c358f; }
+.folk-tag.tag-autokarowe { background:#dceeff; color:#155b91; }
+.folk-tag.tag-inne { background:#ecebea; color:#625b55; }
+
+/* Prawdziwe assety PNG dobierane automatycznie z pola region. */
 .region-ornament {
-  position: absolute; z-index: 1; right: 17px; bottom: 12px;
-  width: 72px; height: 82px; display: grid; place-items: center;
-  font-family: Georgia, 'Times New Roman', serif; font-size: 62px; line-height: 1;
-  opacity: .94; transform-origin: 50% 100%; pointer-events: none;
-  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+  position:absolute;
+  z-index:1;
+  right:8px;
+  bottom:5px;
+  width:112px;
+  height:112px;
+  object-fit:contain;
+  object-position:right bottom;
+  opacity:.62;
+  pointer-events:none;
+  user-select:none;
+  filter:saturate(.95);
 }
-/* Lubelskie: czerwony kwiat + zielony akcent */
-.ornament-lubelskie { transform: none; filter: none; }
-.ornament-image { width: 108px; height: 108px; place-items: end center; opacity: .78; }
-.ornament-image img { width: 100%; height: 100%; object-fit: contain; display: block; }
-/* Biłgorajskie: mocny czerwono-czarny ornament */
-.ornament-bilgorajskie { color:#c91f28; text-shadow: 8px 8px 0 #171717; transform: rotate(-12deg) scale(.82); }
-/* Chełmskie: pomarańczowo-czarny */
-.ornament-chelmskie { color:#ef6c00; text-shadow: 8px 7px 0 #191919; transform: rotate(8deg) scale(.78); }
-/* Spiskie: stylizowana parzenica */
-.ornament-spiskie { color:#111; text-shadow: 0 12px 0 #d5232b, 0 22px 0 #111; transform: scaleX(.72) scaleY(1.02); }
-/* Krakowskie: pawie pióro / róże - zieleń + niebieski środek */
-.ornament-krakowskie { color:#167345; text-shadow: 0 -12px 0 #1262a3, 9px 5px 0 #d72a2f; transform: rotate(12deg) scale(.82); }
-/* Łowickie: wielobarwny kwiat */
-.ornament-lowickie { color:#e2252b; text-shadow: 8px 0 0 #125aa0, -7px 5px 0 #f3b51b, 0 11px 0 #168144; transform: scale(.78); }
-/* Rzeszowskie: czerwono-niebieski */
-.ornament-rzeszowskie { color:#174f9c; text-shadow: 8px 7px 0 #d4212b; transform: scale(.82); }
-/* Pozostałe: neutralny motyw Dąbrowicy */
-.ornament-ogolny { color:#d5232b; filter: drop-shadow(9px 10px 0 #247c46); transform: scale(.72); }
+.folk-card:hover .region-ornament { opacity:.72; }
 
 @media (max-width: 650px) {
-  .folk-card > h2, .folk-card > .folk-tags, .folk-card > .card-region, .folk-card > .lyrics-preview { max-width: calc(100% - 66px); }
-  .region-ornament { right: 12px; bottom: 10px; width: 60px; height: 70px; font-size: 52px; opacity: .88; }
-  .region-ornament.ornament-image { width: 82px; height: 82px; opacity: .72; }
+  .folk-card > h2, .folk-card > .folk-tags, .folk-card > .card-region, .folk-card > .lyrics-preview { max-width: calc(100% - 88px); }
+  .region-ornament { right:6px; bottom:4px; width:88px; height:88px; opacity:.58; }
 }
+
