@@ -17,6 +17,37 @@ function norm(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
+
+
+function regionKey(region: string | null) {
+  const r = norm(region || '')
+  if (r.includes('bilgor')) return 'bilgorajskie'
+  if (r.includes('chelm')) return 'chelmskie'
+  if (r.includes('spis')) return 'spiskie'
+  if (r.includes('krak')) return 'krakowskie'
+  if (r.includes('lowicz')) return 'lowickie'
+  if (r.includes('rzesz')) return 'rzeszowskie'
+  if (r.includes('lubel')) return 'lubelskie'
+  return 'ogolny'
+}
+
+function typeIcon(tags: string[] | null) {
+  const t = norm((tags || []).join(' '))
+  if (t.includes('koled')) return '✦'
+  if (t.includes('biesiad')) return '🍷'
+  if (t.includes('patriot')) return '🇵🇱'
+  if (t.includes('autokar')) return '🚌'
+  if (t.includes('ludow')) return '✿'
+  return '♪'
+}
+
+function RegionOrnament({ region }: { region: string | null }) {
+  const key = regionKey(region)
+  return <span className={`region-ornament ornament-${key}`} aria-hidden="true">
+    {key === 'spiskie' ? '♠' : key === 'krakowskie' ? '◉' : key === 'lowickie' ? '✺' : key === 'rzeszowskie' ? '❋' : key === 'chelmskie' ? '✤' : key === 'bilgorajskie' ? '❦' : '❀'}
+  </span>
+}
+
 function parseTags(value: string) {
   return value
     .split(',')
@@ -191,12 +222,13 @@ export default function Home() {
 
         <div className="grid folk-grid">
           {filtered.map(song => (
-            <Link key={song.id} href={`/song/${song.id}`} className="card folk-card">
+            <Link key={song.id} href={`/song/${song.id}`} className={`card folk-card region-${regionKey(song.region)}`}>
               <div className="card-chevron">›</div>
+              <RegionOrnament region={song.region} />
               <h2>{song.title}</h2>
               {(song.tags || []).length > 0 && (
                 <div className="folk-tags">
-                  {song.tags?.map(tag => <span className="folk-tag" key={tag}>{tag}</span>)}
+                  {song.tags?.map((tag, i) => <span className="folk-tag" key={tag}>{i === 0 && <span className="type-icon">{typeIcon(song.tags)}</span>}{tag}</span>)}
                 </div>
               )}
               {song.region && <div className="card-region">⌖ {song.region}</div>}

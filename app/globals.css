@@ -428,3 +428,39 @@ a {
   .folk-grid { grid-template-columns: 1fr; }
   .folk-card { min-height: 0; }
 }
+
+/* --- Regionalne akcenty kafelków (nagłówek bez zmian) --- */
+.folk-card { overflow: hidden; }
+.folk-card > h2,
+.folk-card > .folk-tags,
+.folk-card > .card-region,
+.folk-card > .lyrics-preview { position: relative; z-index: 2; max-width: calc(100% - 78px); }
+.type-icon { margin-right: 5px; font-size: .95em; }
+.region-ornament {
+  position: absolute; z-index: 1; right: 17px; bottom: 12px;
+  width: 72px; height: 82px; display: grid; place-items: center;
+  font-family: Georgia, 'Times New Roman', serif; font-size: 62px; line-height: 1;
+  opacity: .94; transform-origin: 50% 100%; pointer-events: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+}
+/* Lubelskie: czerwony kwiat + zielony akcent */
+.ornament-lubelskie { color:#cf252b; filter: drop-shadow(10px 11px 0 #1f7a43); transform: scale(.72); }
+/* Biłgorajskie: mocny czerwono-czarny ornament */
+.ornament-bilgorajskie { color:#c91f28; text-shadow: 8px 8px 0 #171717; transform: rotate(-12deg) scale(.82); }
+/* Chełmskie: pomarańczowo-czarny */
+.ornament-chelmskie { color:#ef6c00; text-shadow: 8px 7px 0 #191919; transform: rotate(8deg) scale(.78); }
+/* Spiskie: stylizowana parzenica */
+.ornament-spiskie { color:#111; text-shadow: 0 12px 0 #d5232b, 0 22px 0 #111; transform: scaleX(.72) scaleY(1.02); }
+/* Krakowskie: pawie pióro / róże - zieleń + niebieski środek */
+.ornament-krakowskie { color:#167345; text-shadow: 0 -12px 0 #1262a3, 9px 5px 0 #d72a2f; transform: rotate(12deg) scale(.82); }
+/* Łowickie: wielobarwny kwiat */
+.ornament-lowickie { color:#e2252b; text-shadow: 8px 0 0 #125aa0, -7px 5px 0 #f3b51b, 0 11px 0 #168144; transform: scale(.78); }
+/* Rzeszowskie: czerwono-niebieski */
+.ornament-rzeszowskie { color:#174f9c; text-shadow: 8px 7px 0 #d4212b; transform: scale(.82); }
+/* Pozostałe: neutralny motyw Dąbrowicy */
+.ornament-ogolny { color:#d5232b; filter: drop-shadow(9px 10px 0 #247c46); transform: scale(.72); }
+
+@media (max-width: 650px) {
+  .folk-card > h2, .folk-card > .folk-tags, .folk-card > .card-region, .folk-card > .lyrics-preview { max-width: calc(100% - 66px); }
+  .region-ornament { right: 12px; bottom: 10px; width: 60px; height: 70px; font-size: 52px; opacity: .88; }
+}
