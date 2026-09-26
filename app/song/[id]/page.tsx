@@ -29,6 +29,7 @@ function regionKey(region: string | null) {
   if (r.includes('chelm')) return 'chelm'
   if (r.includes('rzesz')) return 'rzeszow'
   if (r.includes('krak')) return 'krakow'
+  if (r.includes('zamosc')) return 'zamosc'
   if (r.includes('lowicz')) return 'lowicz'
   if (r.includes('nowy sacz') || r.includes('sadecz')) return 'nowy-sacz'
   if (r.includes('podhale')) return 'podhale'
