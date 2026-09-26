@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { supabase, imageUrl } from '@/lib/supabase'
 
 type Song = {
@@ -74,6 +74,7 @@ function parseTags(value: string) {
 export default function SongPage() {
   const params = useParams()
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   const [song, setSong] = useState<Song | null>(null)
   const [admin, setAdmin] = useState(false)
@@ -135,14 +136,26 @@ export default function SongPage() {
 
     const result = await r.json()
 
-    if (!r.ok) {
-      alert('Błąd zapisu: ' + (result.error || r.statusText))
-      return
-    }
+if (!r.ok) {
+  alert('Błąd zapisu: ' + (result.error || r.statusText))
+  return
+}
 
-    setSong({ ...song, ...updated })
-    setEditing(false)
-    alert('Zapisano zmiany')
+const newSlug = result.data.slug
+
+setSong({
+  ...song,
+  ...updated,
+  slug: newSlug
+})
+
+setEditing(false)
+
+if (newSlug !== song.slug) {
+  router.replace(`/piosenka/${newSlug}`)
+}
+
+alert('Zapisano zmiany')
   }
 
   if (!song) return <main className="page">Ładowanie...</main>
